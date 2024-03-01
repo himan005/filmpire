@@ -2,12 +2,16 @@ import React from 'react'
 import { CssBaseline } from "@mui/material"
 import {Route, Routes} from 'react-router-dom'
 import {Actors, Movies, NavBar, MovieInformation, Profile} from './components/';
+import useStyles from './components/styles';
 
-const  App = () => (
-    <div>
+const  App = () => {
+  const classes = useStyles()
+  return (
+    <div className={classes.root}>
       <CssBaseline />
       <NavBar />
-      <main>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
         <Routes>
           <Route path = "/" exact element={<Movies />} />
           <Route path = "/profile/:id" element={<Profile />} />
@@ -17,5 +21,6 @@ const  App = () => (
       </main>
     </div>
   )
+}
 
 export default App
