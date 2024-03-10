@@ -1,19 +1,47 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 
 import { AppBar, IconButton, Toolbar, Drawer, Button, Avatar, useMediaQuery, Icon, collapseClasses } from '@mui/material';
 import { Menu, AccountCircle, Brightness4, Brightness7  } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser, userSelector } from '../../features/auth';
+
+import {Sidebar, Search} from '..';
 import useStyles from './styles'
-import {Sidebar} from '..';
-import {Search} from '..'
+import { fetchAuthToken, moviesApi, createSessionId } from '../../utils';
 
 const NavBar = () => {
+    const {isAuthenticated, user} = useSelector(userSelector)
     const [mobileOpen, setMobileOpen] = useState(false)
     const classes = useStyles()
     const isMobile = useMediaQuery('(max-width:600px)')
     const theme = useTheme()
-    const isAuthenticated = true
+    const dispatch = useDispatch()
+    const token = localStorage.getItem('request_token')
+    const session_id = localStorage.getItem('session_id')
+    console.log("token", token)
+    console.log("local storage session_id", session_id)
+    console.log("userSelector", isAuthenticated, user)
+    useEffect(() =>{
+        const logInUser = async () =>{
+            if(token){
+                console.log("useEffect token")
+                if(session_id){
+                    const {data: userData} = await moviesApi.get(`/account?session_id=${session_id}`)
+                    console.log(userData)
+                    dispatch(setUser(userData))
+                } else {
+                    const sessionId = await createSessionId()
+                    const {data: userData} = await moviesApi.get(`/account?session_id=${sessionId}`)
+                    console.log(userData)
+                    dispatch(setUser(userData))
+                } 
+            }
+        }
+        logInUser()
+    }, [token])
+
   return (
     <>
     {/* NavBar */}
@@ -29,9 +57,9 @@ const NavBar = () => {
             {!isMobile && <Search/>}
             <div>
                 {!isAuthenticated ? 
-                    (<Button color="inherit" onClick={()=> {}} >Login &nbsp;</Button>) : 
+                    (<Button color="inherit" onClick={fetchAuthToken} >Login &nbsp;<AccountCircle/></Button>) : 
                     (
-                        <Button color="inherit" component={Link} to={`/profile/:id`} className={classes.linkButton} onClick={() => {}}>
+                        <Button color="inherit" component={Link} to={`/profile/${user.id}`} className={classes.linkButton} onClick={() => {}}>
                             {!isMobile && <>My Movies &nbsp;</>}
                             <Avatar 
                                 style={{width:30, height:30}} 
