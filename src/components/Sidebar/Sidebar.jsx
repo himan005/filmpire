@@ -7,6 +7,9 @@ import useStyles from './styles';
 import { useGetGenresQuery } from '../../services/moviesData';
 import genreIcons from '../../assets/genres'; 
 
+import { useDispatch, useSelector } from 'react-redux';
+import {selectGenreOrCategory} from '../../features/currentGenreOrCategory';
+
 const redLogo = 'https://fontmeme.com/permalink/210930/8531c658a743debe1e1aa1a2fc82006e.png';
 const blueLogo = 'https://fontmeme.com/permalink/210930/6854ae5c7f76597cf8680e48a2c8a50a.png';
 
@@ -20,8 +23,14 @@ const  Sidebar = ({setMobileOpen}) => {
     const classes = useStyles()
     const theme = useTheme()
     const {data, isFetching} = useGetGenresQuery()
+    const dispatch = useDispatch()
+    const { genreIdOrCategoryName } = useSelector((state) => state.currentGenreOrCategory)
 
-    console.log("Genres Data", data)
+    useEffect(() =>{
+        setMobileOpen(false);
+    }, [genreIdOrCategoryName])
+
+    // console.log("Genres Data", data)
 
   return (
     <>
@@ -38,7 +47,7 @@ const  Sidebar = ({setMobileOpen}) => {
             {
                 categories.map(({label, value}) =>(
                     <Link key={value} className={classes.links} to="/">
-                        <ListItem onClick={() => {}} button>
+                        <ListItem onClick={() => dispatch(selectGenreOrCategory(value))} button>
                             <ListItemIcon>
                                 <img src={genreIcons[label.toLowerCase()]} className={classes.genereImage} height={30} />
                             </ListItemIcon>
@@ -60,7 +69,7 @@ const  Sidebar = ({setMobileOpen}) => {
                 ) 
                 : data.genres.map(({name, id}) =>(
                     <Link key={id} className={classes.links} to="/">
-                        <ListItem onClick={() => {}} button>
+                        <ListItem onClick={() => dispatch(selectGenreOrCategory(id))} button>
                             <ListItemIcon>
                                 <img src={genreIcons[name.toLowerCase()]} className={classes.genereImage} height={30} />
                             </ListItemIcon>
