@@ -6,9 +6,9 @@ import { useGetMoviesQuery } from '../../services/moviesData.js';
 import {MoviesList} from '..';
 
 const Movies = () => {
-  const {genreIdOrCategoryName} = useSelector((state) => state.currentGenreOrCategory)
-  const {data, error, isFetching} = useGetMoviesQuery({genreIdOrCategoryName})
-  console.log("movies", data) 
+  const [page, setPage] = useState(1)
+  const {genreIdOrCategoryName, searchQuery} = useSelector((state) => state.currentGenreOrCategory)
+  const {data, error, isFetching} = useGetMoviesQuery({genreIdOrCategoryName, page, searchQuery })
 
   if(isFetching){
     return (
