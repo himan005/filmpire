@@ -20,21 +20,17 @@ const NavBar = () => {
     const dispatch = useDispatch()
     const token = localStorage.getItem('request_token')
     const session_id = localStorage.getItem('session_id')
-    console.log("token", token)
-    console.log("local storage session_id", session_id)
-    console.log("userSelector", isAuthenticated, user)
+
     useEffect(() =>{
         const logInUser = async () =>{
             if(token){
                 console.log("useEffect token")
                 if(session_id){
                     const {data: userData} = await moviesApi.get(`/account?session_id=${session_id}`)
-                    console.log(userData)
                     dispatch(setUser(userData))
                 } else {
                     const sessionId = await createSessionId()
                     const {data: userData} = await moviesApi.get(`/account?session_id=${sessionId}`)
-                    console.log(userData)
                     dispatch(setUser(userData))
                 } 
             }
